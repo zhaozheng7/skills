@@ -1,0 +1,40 @@
+{
+  "skill_name": "c-coding-style",
+  "evals": [
+    {
+      "id": 1,
+      "name": "write_simple_function",
+      "prompt": "写一个C语言函数，实现两个整数相加，并符合华为编码规范",
+      "expected_output": "一个C函数，函数名使用大驼峰，左大括号另起一行，使用Tab缩进，有适当注释",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "check_existing_code",
+      "prompt": "检查下面这段C代码的风格问题：\n\nint sum(int a,int b){return a+b;}\n\nint globalCounter;",
+      "expected_output": "指出以下问题：\n1. 函数左大括号应另起一行\n2. 小括号内参数间应有空格\n3. 全局变量应使用g前缀\n4. 应有适当注释\n5. 函数名应使用大驼峰命名",
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "write_struct_with_naming",
+      "prompt": "定义一个表示用户信息的结构体，包含用户ID、姓名、年龄字段，符合华为C编码规范",
+      "expected_output": "结构体类型名使用大驼峰(如UserInfo)，字段使用小驼峰(userId, userName, age)，有文件头版权声明",
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "fix_code_style",
+      "prompt": "修复以下代码的风格问题：\n\n#define max_value 100\nenum color{red,blue,green};\nstruct data{int count;char*name;};",
+      "expected_output": "修复后的代码：\n- 宏改为MAX_VALUE\n- 枚举值改为RED, BLUE, GREEN\n- 结构体类型改为Data\n- 字段改为小驼峰\n- 添加适当注释和格式",
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "write_complete_file",
+      "prompt": "创建一个C源文件，实现一个计算数组和的函数，文件包含完整的版权头注释",
+      "expected_output": "完整的.c文件，包含：\n- 版权头注释(Copyright (c) Huawei Technologies Co., Ltd. 2026)\n- 使用Tab缩进\n- 函数大驼峰命名\n- 正确的大括号风格\n- 适当的注释",
+      "files": []
+    }
+  ]
+}
