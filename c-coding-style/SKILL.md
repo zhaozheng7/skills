@@ -18,17 +18,21 @@ license: Copyright (c) Huawei Technologies Co., Ltd. 2026. All rights reserved.
 
 ## 命名规范
 
-### 函数、类型定义（大驼峰）
+### 函数（小写下划线）
+
+**函数名使用小写+下划线命名（snake_case）：**
+- 函数名：`get_data()`, `calculate_sum()`, `parse_config()`
+
+**带模块前缀的函数名：**
+- `hisi_get_data()`, `net_calc_packet_size()`, `util_parse_config()`
+
+### 类型定义（大驼峰）
 
 **以下类型使用大驼峰命名（PascalCase）：**
-- 函数名：`GetData()`, `CalculateSum()`
 - 结构体类型：`struct UserInfo {}`, `struct DataBuffer {}`
 - 枚举类型：`enum ColorType {}`, `enum HttpStatus {}`
 - 联合体类型：`union DataContainer {}`
 - typedef定义的类型：`typedef uint32_t UserId;`
-
-**带模块前缀的大驼峰：**
-- `HisiGetData()`, `NetCalcPacketSize()`, `UtilParseConfig()`
 
 ### 局部变量、参数、字段（小驼峰）
 
@@ -43,12 +47,16 @@ license: Copyright (c) Huawei Technologies Co., Ltd. 2026. All rights reserved.
 
 - 全局变量必须带`g`前缀：`int gGlobalCounter;`, `char *gConfigPath;`
 
-### 宏、枚举值、标签（全大写下划线）
+### 宏、枚举值（全大写下划线）
 
 **以下使用全大写+下划线：**
 - 宏定义：`#define MAX_SIZE 100`, `#define BUFFER_SIZE 256`
 - 枚举值：`enum ColorType { COLOR_RED, COLOR_GREEN, COLOR_BLUE };`
-- goto标签：`ERROR_HANDLER:`, `CLEANUP_EXIT:`
+
+### goto标签（小写下划线）
+
+**goto标签使用小写+下划线命名：**
+- `error_handler:`, `cleanup_exit:`, `retry_connect:`
 
 ### 函数式宏（全大写或大驼峰）
 
@@ -72,7 +80,7 @@ license: Copyright (c) Huawei Technologies Co., Ltd. 2026. All rights reserved.
 - 单行注释示例：
   ```c
   /* 获取用户数据 */
-  int result = GetUserData();
+  int result = get_user_data();
   ```
 
 ### 多行注释
@@ -94,7 +102,7 @@ license: Copyright (c) Huawei Technologies Co., Ltd. 2026. All rights reserved.
 
 ```c
 /* 计算两个数的和 */
-int Add(int a, int b)
+int add(int a, int b)
 {
     return a + b;
 }
@@ -123,31 +131,51 @@ int Add(int a, int b)
 函数的左大括号**另起一行，放在行首，独占一行**：
 
 ```c
-int CalculateSum(int a, int b)
+int calculate_sum(int a, int b)
 {
     return a + b;
 }
 ```
 
-### 其他大括号
+### 单语句不加括号
 
-非函数的左大括号**跟随语句，放在行末**：
+**当 if、for、while 等控制语句后只有一行语句时，不使用大括号：**
 
 ```c
+/* 单语句 - 不使用大括号 */
+if (condition)
+    do_something();
+
+for (int i = 0; i < max; i++)
+    process_item(i);
+
+while (is_running)
+    process();
+```
+
+### 多语句必须加括号
+
+**当控制语句后有多行语句时，必须使用大括号：**
+
+```c
+/* 多语句 - 必须使用大括号 */
 if (condition) {
-    doSomething();
-} else if (otherCondition) {
-    doOtherThing();
+    do_something();
+    do_another_thing();
+} else if (other_condition) {
+    do_other_thing();
 } else {
-    doDefault();
+    do_default();
 }
 
 while (condition) {
     process();
+    update();
 }
 
 for (int i = 0; i < max; i++) {
-    processItem(i);
+    process_item(i);
+    update_item(i);
 }
 
 do {
@@ -166,15 +194,15 @@ do {
 } while (condition);  /* while跟在同一行 */
 
 if (condition) {
-    doA();
+    do_a();
 } else {  /* else跟在同一行 */
-    doB();
+    do_b();
 }
 
 if (condition) {
-    doA();
+    do_a();
 } else if (other) {  /* else if跟在同一行 */
-    doB();
+    do_b();
 }
 
 struct Data {
@@ -192,11 +220,11 @@ struct Data {
 
 ```c
 /* 好的例子 */
-int result = CalculateSum(a, b);
-int count = GetCount();
+int result = calculate_sum(a, b);
+int count = get_count();
 
 /* 不好的例子 */
-int result = CalculateSum(a, b); int count = GetCount();
+int result = calculate_sum(a, b); int count = get_count();
 ```
 
 ### 换行原则
@@ -212,18 +240,18 @@ int result = CalculateSum(a, b); int count = GetCount();
 /* 按操作符优先级换行 */
 if (condition1 && condition2 && condition3 &&
     condition4 && condition5) {
-    doSomething();
+    do_something();
 }
 
 /* 函数参数换行 */
-longResult = VeryLongFunctionName(parameterOne, parameterTwo,
-                                  parameterThree, parameterFour);
+long_result = very_long_function_name(parameter_one, parameter_two,
+                                      parameter_three, parameter_four);
 
 /* 函数调用换行，缩进对齐 */
-result = FunctionWithLongName(
-    firstParameter,
-    secondParameter,
-    thirdParameter
+result = function_with_long_name(
+    first_parameter,
+    second_parameter,
+    third_parameter
 );
 
 /* 字符串拼接 */
@@ -317,34 +345,57 @@ python scripts/check_c_style.py <文件或目录路径>
 ## 常见错误示例
 
 ```c
-/* 错误1: 函数左大括号未另起一行 */
-int Func() {        /* 错误 */
+/* 错误1: 函数名使用大驼峰 */
+int CalculateSum(int a, int b)    /* 错误 */
+{
+    return a + b;
+}
+
+int calculate_sum(int a, int b)   /* 正确 */
+{
+    return a + b;
+}
+
+/* 错误2: 函数左大括号未另起一行 */
+int calculate_sum() {    /* 错误 */
     return 0;
 }
 
-int Func()          /* 正确 */
+int calculate_sum()      /* 正确 */
 {
     return 0;
 }
 
-/* 错误2: 全局变量缺少g前缀 */
-int globalCount;    /* 错误 */
-int gGlobalCount;   /* 正确 */
+/* 错误3: 全局变量缺少g前缀 */
+int global_count;        /* 错误 */
+int gGlobal_count;       /* 正确 */
 
-/* 错误3: 结构体类型名使用小驼峰 */
-struct userInfo {}; /* 错误 */
-struct UserInfo {}; /* 正确 */
+/* 错误4: 结构体类型名使用小驼峰 */
+struct user_info {};     /* 错误 */
+struct UserInfo {};      /* 正确 */
 
-/* 错误4: 使用空格缩进 */
+/* 错误5: 单语句if使用大括号 */
+if (condition) {         /* 不推荐：单语句不应使用大括号 */
+    do_something();
+}
+
+if (condition)           /* 正确：单语句不使用大括号 */
+    do_something();
+
+/* 错误6: 使用空格缩进 */
 void func()
 {
-    int x;          /* 错误：应该用Tab缩进 */
+    int x;               /* 错误：应该用Tab缩进 */
 }
 
-/* 错误5: 注释符后无空格 */
-int x;/*这是注释*/  /* 错误 */
-int x; /* 这是注释 */ /* 正确 */
+/* 错误7: 注释符后无空格 */
+int x;/*这是注释*/       /* 错误 */
+int x; /* 这是注释 */    /* 正确 */
 
-/* 错误6: 行宽超过80字符 */
-int result = someVeryLongFunctionName(withMany, parameters, that, exceed, limit);
+/* 错误8: goto标签使用大写 */
+ERROR_HANDLER:           /* 错误 */
+error_handler:           /* 正确 */
+
+/* 错误9: 行宽超过80字符 */
+int result = some_very_long_function_name(with_many, parameters, that, exceed, limit);
 ```
