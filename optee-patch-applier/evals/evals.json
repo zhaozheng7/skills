@@ -1,0 +1,109 @@
+{
+  "skill_name": "optee-patch-applier",
+  "evals": [
+    {
+      "id": 1,
+      "name": "initial-setup-gathering",
+      "prompt": "我有一个本地的OPTEE仓库在 D:/optee_os，这是基于4.5.0版本的，现在我想把社区最新的4.6.0版本的更新应用到我的代码上，但是我需要确保每个patch应用后都能编译通过。我的编译命令是 `make PLATFORM=vexpress PLATFORM_FLAVOR=qemu_virt`",
+      "expected_output": "Claude应该询问必要信息（repo路径、起止版本、编译命令），确认后创建工作分支，获取commits列表，然后询问用户是否继续",
+      "assertions": [
+        {
+          "name": "asks_for_repository_path",
+          "check": "输出中包含确认仓库路径的内容"
+        },
+        {
+          "name": "asks_for_build_command",
+          "check": "输出中包含确认编译命令的内容"
+        },
+        {
+          "name": "confirms_commit_range",
+          "check": "输出中包含确认commit或版本范围的内容"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "handle-build-error",
+      "prompt": "我应用了一个commit后编译失败了，错误信息是:\n```\ncore/arch/arm/mm/tee_pager.c:123:10: error: implicit declaration of function 'tee_pager_add_phys' did you mean 'tee_pager_add_area'?\n```",
+      "expected_output": "Claude应该分析错误类型（编译错误），显示受影响的文件和行号，提出解决方案建议，然后等待用户决定如何处理",
+      "assertions": [
+        {
+          "name": "identifies_error_type",
+          "check": "输出中识别出这是编译错误(compilation error)"
+        },
+        {
+          "name": "shows_affected_file",
+          "check": "输出中包含文件名 core/arch/arm/mm/tee_pager.c"
+        },
+        {
+          "name": "proposes_solution",
+          "check": "输出中提供了解决方案建议"
+        },
+        {
+          "name": "waits_for_user",
+          "check": "输出中包含询问用户如何处理的内容"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "handle-cherry-pick-conflict",
+      "prompt": "我在cherry-pick一个commit时遇到了冲突，git status显示:\n```\nboth modified:   core/kernel/thread.c\n```\n我该怎么处理？",
+      "expected_output": "Claude应该显示冲突详情，展示冲突文件，并给出选项：终止cherry-pick、跳过此commit、或手动解决冲突。不应该自动修改代码或重复应用同一个commit。",
+      "assertions": [
+        {
+          "name": "shows_conflict_details",
+          "check": "输出中显示冲突文件 core/kernel/thread.c"
+        },
+        {
+          "name": "provides_options",
+          "check": "输出中提供abort、skip或手动解决等选项"
+        },
+        {
+          "name": "does_not_auto_resolve",
+          "check": "输出中没有直接修改代码的内容"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "successful-application",
+      "prompt": "commit abc1234 应用成功了，编译也通过了，下一步怎么做？",
+      "expected_output": "Claude应该记录这个commit为成功应用，更新进度（例如 X/Y），然后继续处理下一个commit",
+      "assertions": [
+        {
+          "name": "updates_progress",
+          "check": "输出中包含进度信息（如 Applied: X/Y）"
+        },
+        {
+          "name": "continues_to_next",
+          "check": "输出中包含继续处理下一个commit的内容"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "summary-report",
+      "prompt": "所有的commits都处理完了，给我一个总结报告",
+      "expected_output": "Claude应该生成一个总结，包括：总commit数、成功应用数、失败数（冲突+编译错误）、跳过数，并提供后续步骤建议",
+      "assertions": [
+        {
+          "name": "shows_total_processed",
+          "check": "输出中包含总处理的commit数量"
+        },
+        {
+          "name": "shows_success_count",
+          "check": "输出中包含成功应用的commit数量"
+        },
+        {
+          "name": "shows_failure_count",
+          "check": "输出中包含失败commit的数量"
+        },
+        {
+          "name": "provides_next_steps",
+          "check": "输出中包含后续步骤建议"
+        }
+      ]
+    }
+  ]
+}
